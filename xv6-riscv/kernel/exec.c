@@ -81,10 +81,8 @@ int exec(char *path, char **argv)
     if (p->ondemand == true)
     {
       print_skip_section(path, ph.vaddr, ph.memsz);
-      printf("skipping section\n");
       continue;
     }
-    printf("loading section\n");
     if ((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
       goto bad;
     sz = sz1;
