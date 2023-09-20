@@ -58,9 +58,14 @@ int exec(char *path, char **argv)
   {
     p->ondemand = true;
   }
+
   if (p->ondemand == true)
   {
     print_ondemand_proc(path);
+  }
+  else
+  {
+    print_static_proc(path);
   }
 
   begin_op();
