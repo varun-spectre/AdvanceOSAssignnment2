@@ -74,6 +74,7 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
 
 void page_fault_handler(void)
 {
+    printf("inside page fault handler\n");
     /* Current process struct */
     struct proc *p = myproc();
 
