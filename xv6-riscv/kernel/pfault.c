@@ -16,13 +16,14 @@ int loadseg(pagetable_t pagetable, uint64 va, struct inode *ip, uint offset, uin
 int flags2perm(int flags);
 
 /* CSE 536: (2.4) read current time. */
-uint64 read_current_timestamp() {
-  uint64 curticks = 0;
-  acquire(&tickslock);
-  curticks = ticks;
-  wakeup(&ticks);
-  release(&tickslock);
-  return curticks;
+uint64 read_current_timestamp()
+{
+    uint64 curticks = 0;
+    acquire(&tickslock);
+    curticks = ticks;
+    wakeup(&ticks);
+    release(&tickslock);
+    return curticks;
 }
 
 bool psa_tracker[PSASIZE];
@@ -30,24 +31,25 @@ bool psa_tracker[PSASIZE];
 /* All blocks are free during initialization. */
 void init_psa_regions(void)
 {
-    for (int i = 0; i < PSASIZE; i++) 
+    for (int i = 0; i < PSASIZE; i++)
         psa_tracker[i] = false;
 }
 
 /* Evict heap page to disk when resident pages exceed limit */
-void evict_page_to_disk(struct proc* p) {
+void evict_page_to_disk(struct proc *p)
+{
     /* Find free block */
     int blockno = 0;
     /* Find victim page using FIFO. */
     /* Print statement. */
     print_evict_page(0, 0);
     /* Read memory from the user to kernel memory first. */
-    
+
     /* Write to the disk blocks. Below is a template as to how this works. There is
      * definitely a better way but this works for now. :p */
-    struct buf* b;
-    b = bread(1, PSASTART+(blockno));
-        // Copy page contents to b.data using memmove.
+    struct buf *b;
+    b = bread(1, PSASTART + (blockno));
+    // Copy page contents to b.data using memmove.
     bwrite(b);
     brelse(b);
 
@@ -56,21 +58,21 @@ void evict_page_to_disk(struct proc* p) {
 }
 
 /* Retrieve faulted page from disk. */
-void retrieve_page_from_disk(struct proc* p, uint64 uvaddr) {
+void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
+{
     /* Find where the page is located in disk */
 
     /* Print statement. */
     print_retrieve_page(0, 0);
 
     /* Create a kernel page to read memory temporarily into first. */
-    
+
     /* Read the disk block into temp kernel page. */
 
     /* Copy from temp kernel page to uvaddr (use copyout) */
 }
 
-
-void page_fault_handler(void) 
+void page_fault_handler(void)
 {
     /* Current process struct */
     struct proc *p = myproc();
@@ -79,11 +81,13 @@ void page_fault_handler(void)
     bool load_from_disk = false;
 
     /* Find faulting address. */
-    uint64 faulting_addr = 0;
+
+    uint64 faulting_addr = r_stval();
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
-    if (true) {
+    if (true)
+    {
         goto heap_handle;
     }
 
@@ -95,7 +99,8 @@ void page_fault_handler(void)
 
 heap_handle:
     /* 2.4: Check if resident pages are more than heap pages. If yes, evict. */
-    if (p->resident_heap_pages == MAXRESHEAP) {
+    if (p->resident_heap_pages == MAXRESHEAP)
+    {
         evict_page_to_disk(p);
     }
 
@@ -104,7 +109,8 @@ heap_handle:
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
 
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
-    if (load_from_disk) {
+    if (load_from_disk)
+    {
         retrieve_page_from_disk(p, faulting_addr);
     }
 
