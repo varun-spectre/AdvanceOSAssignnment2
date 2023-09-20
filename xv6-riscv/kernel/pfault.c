@@ -84,6 +84,8 @@ void page_fault_handler(void)
     /* Find faulting address. */
 
     uint64 faulting_addr = r_stval();
+    faulting_addr = faulting_addr >> 12;
+    faulting_addr = faulting_addr << 12;
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
