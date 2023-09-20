@@ -32,7 +32,7 @@ int exec(char *path, char **argv)
   struct proc *p = myproc();
 
   /* CSE 536: (2.1) Check on-demand status. */
-  if (strncmp(p->name, "init", strlen("init")) == 0 || strncmp(p->name, "sh", strlen("sh")) == 0)
+  if (strncmp(path, "/init", strlen("/init")) == 0 || strncmp(path, "sh", strlen("sh")) == 0)
   {
     p->ondemand = false;
   }
@@ -41,7 +41,9 @@ int exec(char *path, char **argv)
     p->ondemand = true;
     print_ondemand_proc(path);
   }
-
+  printf("exec: %s\n", path);
+  printf("exec: %s\n", p->name);
+  printf("exec: %d\n", p->ondemand);
   begin_op();
 
   if ((ip = namei(path)) == 0)
