@@ -35,7 +35,6 @@ int exec(char *path, char **argv)
   if (strncmp(p->name, "init", strlen("init")) == 0 || strncmp(p->name, "sh", strlen("sh")) == 0)
   {
     p->ondemand = false;
-    print_static_proc(path);
   }
   else
   {
@@ -83,6 +82,7 @@ int exec(char *path, char **argv)
       printf("skipping section\n");
       continue;
     }
+    printf("loading section\n");
     if ((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
       goto bad;
     sz = sz1;
