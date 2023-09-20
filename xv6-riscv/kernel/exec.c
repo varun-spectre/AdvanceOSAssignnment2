@@ -35,19 +35,12 @@ int exec(char *path, char **argv)
   if (strncmp(p->name, "init", strlen("init")) == 0 || strncmp(p->name, "sh", strlen("sh")) == 0)
   {
     p->ondemand = false;
+    print_static_proc(path);
   }
   else
   {
     p->ondemand = true;
-  }
-
-  if (p->ondemand == true)
-  {
     print_ondemand_proc(path);
-  }
-  else
-  {
-    print_static_proc(path);
   }
 
   begin_op();
@@ -84,9 +77,10 @@ int exec(char *path, char **argv)
       goto bad;
 
     uint64 sz1;
-    if (p->ondemand)
+    if (p->ondemand == true)
     {
       print_skip_section(path, ph.vaddr, ph.memsz);
+      printf("skipping section\n");
       continue;
     }
     if ((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
