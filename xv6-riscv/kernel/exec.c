@@ -41,9 +41,9 @@ int exec(char *path, char **argv)
     p->ondemand = true;
     print_ondemand_proc(path);
   }
-  printf("exec: %s\n", path);
-  printf("exec: %s\n", p->name);
-  printf("exec: %d\n", p->ondemand);
+  // printf("exec: %s\n", path);
+  // printf("exec: %s\n", p->name);
+  // printf("exec: %d\n", p->ondemand);
   begin_op();
 
   if ((ip = namei(path)) == 0)
