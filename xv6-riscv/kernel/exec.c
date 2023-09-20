@@ -20,24 +20,6 @@ int flags2perm(int flags)
   return perm;
 }
 
-int custom_strcmp(const char *str1, const char *str2)
-{
-  while (*str1 != '\0' && *str2 != '\0' && *str1 == *str2)
-  {
-    str1++;
-    str2++;
-  }
-
-  if (*str1 == '\0' && *str2 == '\0')
-  {
-    return 0; // Both strings are equal
-  }
-  else
-  {
-    return (*str1 - *str2);
-  }
-}
-
 int exec(char *path, char **argv)
 {
   char *s, *last;
@@ -50,7 +32,7 @@ int exec(char *path, char **argv)
   struct proc *p = myproc();
 
   /* CSE 536: (2.1) Check on-demand status. */
-  if (custom_strcmp(p->name, "init") == 0 || custom_strcmp(p->name, "sh") == 0)
+  if (strncmp(p->name, "init", strlen("init")) == 0 || strncmp(p->name, "sh", strlen("sh")) == 0)
   {
     p->ondemand = false;
   }
