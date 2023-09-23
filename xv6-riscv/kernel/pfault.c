@@ -101,7 +101,7 @@ void page_fault_handler(void)
     struct elfhdr elf;
     struct inode *ip;
     struct proghdr ph;
-    pagetable_t pagetable = 0, oldpagetable;
+    pagetable_t pagetable = p->pagetable;
 
     begin_op();
 
@@ -119,8 +119,8 @@ void page_fault_handler(void)
     if (elf.magic != ELF_MAGIC)
         goto out;
 
-    if ((pagetable = proc_pagetable(p)) == 0)
-        goto out;
+    // if ((pagetable = proc_pagetable(p)) == 0)
+    //     goto out;
 
     print_load_seg(faulting_addr, 0, 0);
 
