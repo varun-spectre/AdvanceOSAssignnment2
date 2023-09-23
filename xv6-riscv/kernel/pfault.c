@@ -95,7 +95,68 @@ void page_fault_handler(void)
     }
 
     /* If it came here, it is a page from the program binary that we must load. */
+    char *s, *last;
+    int i, off;
+    uint64 argc, sz = 0, sp, ustack[MAXARG], stackbase;
+    struct elfhdr elf;
+    struct inode *ip;
+    struct proghdr ph;
+    pagetable_t pagetable = 0, oldpagetable;
+
+    begin_op();
+
+    if ((ip = namei(p->name)) == 0)
+    {
+        end_op();
+        return;
+    }
+    ilock(ip);
+
+    // Check ELF header
+    if (readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf))
+        goto out;
+
+    if (elf.magic != ELF_MAGIC)
+        goto out;
+
+    if ((pagetable = proc_pagetable(p)) == 0)
+        goto out;
+
     print_load_seg(faulting_addr, 0, 0);
+
+    // Load program into memory.
+    printf("starting iteration over program headers\n");
+    for (i = 0, off = elf.phoff; i < elf.phnum; i++, off += sizeof(ph))
+    {
+        if (readi(ip, 0, (uint64)&ph, off, sizeof(ph)) != sizeof(ph))
+            goto out;
+        if (ph.type != ELF_PROG_LOAD)
+            continue;
+        if (ph.memsz < ph.filesz)
+            goto out;
+        if (ph.vaddr + ph.memsz < ph.vaddr)
+            goto out;
+        if (ph.vaddr % PGSIZE != 0)
+            goto out;
+
+        if (ph.vaddr <= faulting_addr && faulting_addr < ph.vaddr + ph.memsz)
+        {
+            printf("found the segment. loading...\n");
+            uint64 offset_in_file = faulting_addr - ph.vaddr;
+
+            uint64 sz1;
+            if ((sz1 = uvmalloc(pagetable, faulting_addr, faulting_addr + PGSIZE, flags2perm(ph.flags))) == 0)
+                goto out;
+            sz = sz1;
+
+            if (loadseg(pagetable, faulting_addr, ip, offset_in_file, PGSIZE) < 0)
+                goto out;
+        }
+    }
+
+    iunlockput(ip);
+    end_op();
+    ip = 0;
 
     /* Go to out, since the remainder of this code is for the heap. */
     goto out;
