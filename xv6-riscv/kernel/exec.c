@@ -81,6 +81,8 @@ int exec(char *path, char **argv)
     if (p->ondemand == true)
     {
       print_skip_section(path, ph.vaddr, ph.memsz);
+      if (ph.vaddr + ph.memsz > sz)
+        sz = ph.vaddr + ph.memsz;
       continue;
     }
     if ((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
