@@ -101,7 +101,7 @@ void page_fault_handler(void)
     struct elfhdr elf;
     struct inode *ip;
     struct proghdr ph;
-    pagetable_t pagetable = p->pagetable;
+    // pagetable_t pagetable = p->pagetable;
 
     begin_op();
 
@@ -147,11 +147,11 @@ void page_fault_handler(void)
             uint64 offset_in_file = faulting_addr - ph.vaddr;
 
             uint64 sz1;
-            if ((sz1 = uvmalloc(pagetable, faulting_addr, faulting_addr + PGSIZE, flags2perm(ph.flags))) == 0)
+            if ((sz1 = uvmalloc(p->pagetable, faulting_addr, faulting_addr + PGSIZE, flags2perm(ph.flags))) == 0)
                 goto out;
             sz = sz1;
 
-            if (loadseg(pagetable, faulting_addr, ip, offset_in_file, PGSIZE) < 0)
+            if (loadseg(p->pagetable, faulting_addr, ip, offset_in_file, PGSIZE) < 0)
                 goto out;
         }
     }
