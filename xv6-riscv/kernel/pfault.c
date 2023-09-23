@@ -138,7 +138,9 @@ void page_fault_handler(void)
             goto out;
         if (ph.vaddr % PGSIZE != 0)
             goto out;
-
+        printf("ph.vaddr: %p\n", ph.vaddr);
+        printf("ph.memsz: %p\n", ph.memsz);
+        printf("faulting_addr: %p\n", faulting_addr);
         if (ph.vaddr <= faulting_addr && faulting_addr < ph.vaddr + ph.memsz)
         {
             printf("found the segment. loading...\n");
