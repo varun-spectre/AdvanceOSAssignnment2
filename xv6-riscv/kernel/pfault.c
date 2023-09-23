@@ -89,7 +89,7 @@ void page_fault_handler(void)
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
-    if (true)
+    if (false)
     {
         goto heap_handle;
     }
