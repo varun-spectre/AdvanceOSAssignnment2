@@ -44,14 +44,14 @@ void usertrap(void)
 
   struct proc *p = myproc();
 
+  // save user program counter.
+  p->trapframe->epc = r_sepc();
+
   /* CSE 536: (2.2) Intercept page faults and redirect them to the fault handler. */
   if (r_scause() == 12 || r_scause() == 13 || r_scause() == 15)
   {
     page_fault_handler();
   }
-
-  // save user program counter.
-  p->trapframe->epc = r_sepc();
 
   if (r_scause() == 8)
   {
