@@ -151,7 +151,7 @@ void page_fault_handler(void)
                 goto out;
             sz = sz1;
 
-            if (loadseg(p->pagetable, faulting_addr, ip, offset_in_file, PGSIZE) < 0)
+            if (loadseg(p->pagetable, faulting_addr, ip, ph.off + offset_in_file, PGSIZE) < 0)
                 goto out;
             printf("loaded segment\n");
         }
