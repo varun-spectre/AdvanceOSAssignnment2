@@ -53,7 +53,7 @@ void usertrap(void)
     page_fault_handler();
   }
 
-  if (r_scause() == 8)
+  else if (r_scause() == 8)
   {
     // system call
 
@@ -76,6 +76,7 @@ void usertrap(void)
   }
   else
   {
+    printf("in else of usertrap");
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
     setkilled(p);
