@@ -53,7 +53,7 @@ void usertrap(void)
     page_fault_handler();
   }
 
-  else if (r_scause() == 8)
+  if (r_scause() == 8)
   {
     // system call
 
