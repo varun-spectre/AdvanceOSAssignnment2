@@ -53,6 +53,9 @@ void usertrap(void)
     page_fault_handler();
   }
 
+  // print value of devintr
+  printf("devintr: %d\n", devintr());
+
   if (r_scause() == 8)
   {
     // system call
@@ -151,8 +154,6 @@ void kerneltrap()
   if (intr_get() != 0)
     panic("kerneltrap: interrupts enabled");
 
-  // print value of devintr
-  printf("devintr: %d\n", devintr());
   if ((which_dev = devintr()) == 0)
   {
     printf("scause %p\n", scause);
