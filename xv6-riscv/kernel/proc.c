@@ -287,9 +287,9 @@ int growproc(int n)
    * on-demand. Also, keep track of all allocated heap pages.
    */
   // update the heaptracker in proc
-  if (n > 0)
+  if (n > 0 && p->ondemand == true)
   {
-    int npages = n / PGSIZE;
+    int npages = PGROUNDUP(n) / PGSIZE;
     track_heap(p, p->sz, npages);
   }
 
