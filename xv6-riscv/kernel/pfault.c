@@ -138,6 +138,10 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
     brelse(b);
 
     // should I free the PSA here?
+    for (int i = 0; i < 4; i++)
+    {
+        psa_tracker[blockno + i] = false;
+    }
 
     /* Copy from temp kernel page to uvaddr (use copyout) */
     copyout(p->pagetable, uvaddr, kpage, PGSIZE);
@@ -244,7 +248,7 @@ void page_fault_handler(void)
     goto out;
 
 heap_handle:
-    // printf("inside heap handle\n");
+    printf("inside heap handle\n");
     /* 2.4: Check if resident pages are more than heap pages. If yes, evict. */
     if (p->resident_heap_pages == MAXRESHEAP)
     {
