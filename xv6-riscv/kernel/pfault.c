@@ -89,9 +89,18 @@ void page_fault_handler(void)
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
-    if (false)
+    for (int i = 0; i < MAXHEAP; i++)
     {
-        goto heap_handle;
+        if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
+        {
+            uint64 heap_start = p->heap_tracker[i].addr;
+            uint64 heap_end = heap_start + PGSIZE;
+
+            if (faulting_addr >= heap_start && faulting_addr < heap_end)
+            {
+                goto heap_handle;
+            }
+        }
     }
 
     /* If it came here, it is a page from the program binary that we must load. */
@@ -164,6 +173,7 @@ void page_fault_handler(void)
     goto out;
 
 heap_handle:
+    prinf("inside heap handle\n");
     /* 2.4: Check if resident pages are more than heap pages. If yes, evict. */
     if (p->resident_heap_pages == MAXRESHEAP)
     {
