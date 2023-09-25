@@ -102,7 +102,7 @@ void evict_page_to_disk(struct proc *p)
     /* Update heap tracker. */
     p->heap_tracker[min_index].loaded = false;
     p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
-    p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
+    //p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
 }
 
 /* Retrieve faulted page from disk. */
@@ -132,10 +132,14 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
     char *kpage = kalloc();
 
     /* Read the disk block into temp kernel page. */
-    struct buf *b;
-    b = bread(1, PSASTART + (blockno));
-    memmove(kpage, b->data, PGSIZE);
-    brelse(b);
+    for (int i = 0; i < 4; i++)
+    {
+	struct buf *b;
+        b = bread(1, PSASTART + (blockno) + i);
+        // Copy page contents to b.data using memmove.
+        memmove( kpage + i * BSIZE, b->data,  BSIZE);
+        brelse(b);
+    }
 
     // should I free the PSA here?
     for (int i = 0; i < 4; i++)
@@ -144,6 +148,9 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
     }
 
     /* Copy from temp kernel page to uvaddr (use copyout) */
+    int sz;
+    if ((sz = uvmalloc(p->pagetable, uvaddr, uvaddr + PGSIZE, PTE_W)) == 0)
+        panic("unable to allocate memory");
     copyout(p->pagetable, uvaddr, kpage, PGSIZE);
 }
 
