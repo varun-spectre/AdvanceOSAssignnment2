@@ -50,8 +50,8 @@ void evict_page_to_disk(struct proc *p)
     }
 
     /* Find victim page using FIFO. */
-    // ind the heap page that was loaded the longest time ago using heap_tracker.
-    int min_time = 0xFFFFFFFFFFFFFFFF;
+    // find the heap page that was loaded the longest time ago using heap_tracker.
+    uint64 min_time = 0xFFFFFFFFFFFFFFFF;
     int min_index = 0;
     for (int i = 0; i < MAXHEAP; i++)
     {
@@ -144,7 +144,7 @@ void page_fault_handler(void)
     struct proc *p = myproc();
 
     /* Track whether the heap page should be brought back from disk or not. */
-    bool load_from_disk = false;
+    // bool load_from_disk = false;
 
     /* Find faulting address. */
 
@@ -255,6 +255,7 @@ heap_handle:
         goto out;
 
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
+    int heap_tracker_block = -1;
     for (int i = 0; i < MAXHEAP; i++)
     {
         if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
@@ -266,12 +267,12 @@ heap_handle:
             {
                 p->heap_tracker[i].loaded = true;
                 p->heap_tracker[i].last_load_time = read_current_timestamp();
-                break;
+                heap_tracker_block = i;
             }
         }
     }
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
-    if (p->heap_tracker[i].startblock != -1)
+    if (p->heap_tracker[heap_tracker_block].startblock != -1)
     {
         retrieve_page_from_disk(p, faulting_addr);
     }
