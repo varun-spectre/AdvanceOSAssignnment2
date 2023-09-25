@@ -48,6 +48,7 @@ void evict_page_to_disk(struct proc *p)
             break;
         }
     }
+    printf("evicting page to disk: %d\n", blockno);
 
     /* Find victim page using FIFO. */
     // find the heap page that was loaded the longest time ago using heap_tracker.
@@ -68,7 +69,7 @@ void evict_page_to_disk(struct proc *p)
     p->heap_tracker[min_index].startblock = blockno;
 
     /* Print statement. */
-    print_evict_page(0, 0);
+    print_evict_page(p->heap_tracker[min_index].addr, blockno);
     /* Read memory from the user to kernel memory first. */
     char *kpage = kalloc();
     copyin(p->pagetable, kpage, p->heap_tracker[min_index].addr, PGSIZE);
@@ -122,7 +123,7 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
     }
 
     /* Print statement. */
-    print_retrieve_page(0, 0);
+    print_retrieve_page(uvaddr, blockno);
 
     /* Create a kernel page to read memory temporarily into first. */
     char *kpage = kalloc();
