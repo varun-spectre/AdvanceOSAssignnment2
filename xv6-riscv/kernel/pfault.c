@@ -186,7 +186,7 @@ heap_handle:
     if (sz >= MAXVA)
         goto out;
 
-    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, PTE_W)) == 0)
+    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, flags2perm(ph.flags))) == 0)
         goto out;
 
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
