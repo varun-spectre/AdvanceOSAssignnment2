@@ -274,6 +274,7 @@ heap_handle:
                 p->heap_tracker[i].loaded = true;
                 p->heap_tracker[i].last_load_time = read_current_timestamp();
                 heap_tracker_block = i;
+                break;
             }
         }
     }
