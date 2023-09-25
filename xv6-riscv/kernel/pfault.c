@@ -74,7 +74,7 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
 
 void page_fault_handler(void)
 {
-    printf("inside page fault handler\n");
+    // printf("inside page fault handler\n");
     /* Current process struct */
     struct proc *p = myproc();
 
@@ -122,10 +122,8 @@ void page_fault_handler(void)
     // if ((pagetable = proc_pagetable(p)) == 0)
     //     goto out;
 
-    print_load_seg(faulting_addr, 0, 0);
-
     // Load program into memory.
-    printf("starting iteration over program headers\n");
+    // printf("starting iteration over program headers\n");
     for (i = 0, off = elf.phoff; i < elf.phnum; i++, off += sizeof(ph))
     {
         if (readi(ip, 0, (uint64)&ph, off, sizeof(ph)) != sizeof(ph))
@@ -138,22 +136,23 @@ void page_fault_handler(void)
             goto out;
         if (ph.vaddr % PGSIZE != 0)
             goto out;
-        printf("ph.vaddr: %p\n", ph.vaddr);
-        printf("ph.memsz: %p\n", ph.memsz);
-        printf("faulting_addr: %p\n", faulting_addr);
+        // printf("ph.vaddr: %p\n", ph.vaddr);
+        // printf("ph.memsz: %p\n", ph.memsz);
+        // printf("faulting_addr: %p\n", faulting_addr);
         if (ph.vaddr <= faulting_addr && faulting_addr < ph.vaddr + ph.memsz)
         {
-            printf("found the segment. loading...\n");
+            // printf("found the segment. loading...\n");
             uint64 offset_in_file = faulting_addr - ph.vaddr;
 
             uint64 sz1;
             if ((sz1 = uvmalloc(p->pagetable, faulting_addr, faulting_addr + PGSIZE, flags2perm(ph.flags))) == 0)
                 goto out;
-            sz = sz1;
+
+            print_load_seg(faulting_addr, ph.off + offset_in_file, PGSIZE);
 
             if (loadseg(p->pagetable, faulting_addr, ip, ph.off + offset_in_file, PGSIZE) < 0)
                 goto out;
-            printf("loaded segment\n");
+            // printf("loaded segment\n");
         }
     }
 

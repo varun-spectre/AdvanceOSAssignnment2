@@ -55,7 +55,7 @@ void usertrap(void)
     printf("devintr after page fault handler: %d\n", devintr());
   }
 
-  if (r_scause() == 8)
+  else if (r_scause() == 8)
   {
     // system call
 
