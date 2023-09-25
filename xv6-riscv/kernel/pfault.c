@@ -77,13 +77,16 @@ void evict_page_to_disk(struct proc *p)
     /* Write to the disk blocks. Below is a template as to how this works. There is
      * definitely a better way but this works for now. :p */
     struct buf *b;
-    b = bread(1, PSASTART + (blockno));
-    // Copy page contents to b.data using memmove.
-    memmove(b->data, kpage, PGSIZE);
-    bwrite(b);
-    brelse(b);
+    for (int i = 0; i < 4; i++)
+    {
+        b = bread(1, PSASTART + (blockno) + i);
+        // Copy page contents to b.data using memmove.
+        memmove(b->data, kpage + i * BSIZE, BSIZE);
+        bwrite(b);
+        brelse(b);
+    }
     /*update PSA*/
-    for (int i = 0; i < PGSIZE; i++)
+    for (int i = 0; i < 4; i++)
     {
         psa_tracker[blockno + i] = true;
     }
