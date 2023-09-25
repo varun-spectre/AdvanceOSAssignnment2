@@ -313,6 +313,10 @@ int growproc(int n)
     p->sz = sz;
     return 0;
   }
+  else
+  {
+    print_skip_heap_region(p->name, p->sz, PGROUNDUP(n) / PGSIZE);
+  }
 }
 
 // Create a new process, copying the parent.
