@@ -181,6 +181,13 @@ heap_handle:
     }
 
     /* 2.3: Map a heap page into the process' address space. (Hint: check growproc) */
+    uint64 va = PGROUNDDOWN(faulting_addr);
+    uint64 sz = p->sz;
+    if (sz >= MAXVA)
+        goto out;
+
+    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, PTE_W)) == 0)
+        goto out;
 
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
 
