@@ -173,7 +173,7 @@ void page_fault_handler(void)
     goto out;
 
 heap_handle:
-    prinf("inside heap handle\n");
+    printf("inside heap handle\n");
     /* 2.4: Check if resident pages are more than heap pages. If yes, evict. */
     if (p->resident_heap_pages == MAXRESHEAP)
     {
