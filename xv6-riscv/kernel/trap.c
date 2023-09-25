@@ -50,9 +50,9 @@ void usertrap(void)
   /* CSE 536: (2.2) Intercept page faults and redirect them to the fault handler. */
   if (r_scause() == 12 || r_scause() == 13 || r_scause() == 15)
   {
-    printf("devintr before page fault handler: %d\n", devintr());
+    // printf("devintr before page fault handler: %d\n", devintr());
     page_fault_handler();
-    printf("devintr after page fault handler: %d\n", devintr());
+    // printf("devintr after page fault handler: %d\n", devintr());
   }
 
   else if (r_scause() == 8)

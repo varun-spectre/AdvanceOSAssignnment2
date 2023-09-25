@@ -95,9 +95,9 @@ void page_fault_handler(void)
     }
 
     /* If it came here, it is a page from the program binary that we must load. */
-    char *s, *last;
+    // char *s, *last;
     int i, off;
-    uint64 argc, sz = 0, sp, ustack[MAXARG], stackbase;
+    // uint64 argc, sz = 0, sp, ustack[MAXARG], stackbase;
     struct elfhdr elf;
     struct inode *ip;
     struct proghdr ph;
