@@ -289,7 +289,7 @@ int growproc(int n)
   // update the heaptracker in proc
   if (n > 0)
   {
-    int npages = PGROUNDUP(n) / PGSIZE;
+    int npages = n / PGSIZE;
     track_heap(p, p->sz, npages);
   }
 
