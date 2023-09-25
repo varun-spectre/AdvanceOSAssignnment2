@@ -316,6 +316,7 @@ int growproc(int n)
   else
   {
     print_skip_heap_region(p->name, p->sz, PGROUNDUP(n) / PGSIZE);
+    return 0;
   }
 }
 
