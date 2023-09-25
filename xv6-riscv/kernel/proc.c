@@ -291,6 +291,7 @@ int growproc(int n)
   {
     int npages = PGROUNDUP(n) / PGSIZE;
     track_heap(p, p->sz, npages);
+    p->sz += n;
   }
 
   // check if name is init or sh

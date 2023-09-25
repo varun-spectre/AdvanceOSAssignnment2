@@ -181,16 +181,28 @@ heap_handle:
     }
 
     /* 2.3: Map a heap page into the process' address space. (Hint: check growproc) */
-    uint64 va = PGROUNDDOWN(faulting_addr);
+    uint64 va = faulting_addr;
     uint64 sz = p->sz;
     if (sz >= MAXVA)
         goto out;
 
-    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, flags2perm(ph.flags))) == 0)
+    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, PTE_W)) == 0)
         goto out;
 
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
+    for (int i = 0; i < MAXHEAP; i++)
+    {
+        if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
+        {
+            uint64 heap_start = p->heap_tracker[i].addr;
+            uint64 heap_end = heap_start + PGSIZE;
 
+            if (faulting_addr >= heap_start && faulting_addr < heap_end)
+            {
+                p->heap_tracker[i].loaded = 1;
+            }
+        }
+    }
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
     if (load_from_disk)
     {
