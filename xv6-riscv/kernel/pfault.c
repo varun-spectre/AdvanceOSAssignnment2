@@ -65,10 +65,7 @@ void evict_page_to_disk(struct proc *p)
         }
     }
 
-    // p->heap_tracker[min_index].loaded = false;
-    // p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
     p->heap_tracker[min_index].startblock = blockno;
-    // p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
 
     /* Print statement. */
     print_evict_page(0, 0);
@@ -97,6 +94,11 @@ void evict_page_to_disk(struct proc *p)
 
     /* Update the resident heap tracker. */
     p->resident_heap_pages -= 1;
+
+    /* Update heap tracker. */
+    p->heap_tracker[min_index].loaded = false;
+    p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
+    p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
 }
 
 /* Retrieve faulted page from disk. */
