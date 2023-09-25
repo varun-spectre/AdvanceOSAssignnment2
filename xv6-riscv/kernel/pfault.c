@@ -260,12 +260,7 @@ heap_handle:
     uint64 sz = p->sz;
     if (sz >= MAXVA)
         goto out;
-
-    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, PTE_W)) == 0)
-        goto out;
-
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
-    int heap_tracker_block = -1;
     for (int i = 0; i < MAXHEAP; i++)
     {
         if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
@@ -275,18 +270,23 @@ heap_handle:
 
             if (faulting_addr >= heap_start && faulting_addr < heap_end)
             {
+                if (p->heap_tracker[i].startblock != -1)
+                {
+                    retrieve_page_from_disk(p, faulting_addr);
+                }
+                else
+                {
+                    if ((sz = uvmalloc(p->pagetable, va, va + PGSIZE, PTE_W)) == 0)
+                        goto out;
+                }
                 p->heap_tracker[i].loaded = true;
                 p->heap_tracker[i].last_load_time = read_current_timestamp();
-                heap_tracker_block = i;
+
                 break;
             }
         }
     }
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
-    if (p->heap_tracker[heap_tracker_block].startblock != -1)
-    {
-        retrieve_page_from_disk(p, faulting_addr);
-    }
 
     /* Track that another heap page has been brought into memory. */
     p->resident_heap_pages++;
