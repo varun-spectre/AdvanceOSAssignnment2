@@ -40,36 +40,101 @@ void evict_page_to_disk(struct proc *p)
 {
     /* Find free block */
     int blockno = 0;
+    for (int i = 0; i < PSASIZE; i++)
+    {
+        if (psa_tracker[i] == false)
+        {
+            blockno = i;
+            break;
+        }
+    }
+
     /* Find victim page using FIFO. */
+    // ind the heap page that was loaded the longest time ago using heap_tracker.
+    int min_time = 0xFFFFFFFFFFFFFFFF;
+    int min_index = 0;
+    for (int i = 0; i < MAXHEAP; i++)
+    {
+        if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
+        {
+            if (p->heap_tracker[i].last_load_time < min_time)
+            {
+                min_time = p->heap_tracker[i].last_load_time;
+                min_index = i;
+            }
+        }
+    }
+
+    // p->heap_tracker[min_index].loaded = false;
+    // p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
+    p->heap_tracker[min_index].startblock = blockno;
+    // p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
+
     /* Print statement. */
     print_evict_page(0, 0);
     /* Read memory from the user to kernel memory first. */
+    char *kpage = kalloc();
+    copyin(p->pagetable, kpage, p->heap_tracker[min_index].addr, PGSIZE);
 
     /* Write to the disk blocks. Below is a template as to how this works. There is
      * definitely a better way but this works for now. :p */
     struct buf *b;
     b = bread(1, PSASTART + (blockno));
     // Copy page contents to b.data using memmove.
+    memmove(b->data, kpage, PGSIZE);
     bwrite(b);
     brelse(b);
+    /*update PSA*/
+    for (int i = 0; i < PGSIZE; i++)
+    {
+        psa_tracker[blockno + i] = true;
+    }
+    /* Free kernel page. */
+    kfree(kpage);
 
     /* Unmap swapped out page */
+    uvmunmap(p->pagetable, p->heap_tracker[min_index].addr, 1, 1);
+
     /* Update the resident heap tracker. */
+    p->resident_heap_pages -= 1;
 }
 
 /* Retrieve faulted page from disk. */
 void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
 {
     /* Find where the page is located in disk */
+    int blockno = 0;
+    for (int i = 0; i < MAXHEAP; i++)
+    {
+        if (p->heap_tracker[i].addr != 0xFFFFFFFFFFFFFFFF)
+        {
+            uint64 heap_start = p->heap_tracker[i].addr;
+            uint64 heap_end = heap_start + PGSIZE;
+
+            if (uvaddr >= heap_start && uvaddr < heap_end)
+            {
+                blockno = p->heap_tracker[i].startblock;
+                break;
+            }
+        }
+    }
 
     /* Print statement. */
     print_retrieve_page(0, 0);
 
     /* Create a kernel page to read memory temporarily into first. */
+    char *kpage = kalloc();
 
     /* Read the disk block into temp kernel page. */
+    struct buf *b;
+    b = bread(1, PSASTART + (blockno));
+    memmove(kpage, b->data, PGSIZE);
+    brelse(b);
+
+    // should I free the PSA here?
 
     /* Copy from temp kernel page to uvaddr (use copyout) */
+    copyout(p->pagetable, uvaddr, kpage, PGSIZE);
 }
 
 void page_fault_handler(void)
@@ -199,12 +264,14 @@ heap_handle:
 
             if (faulting_addr >= heap_start && faulting_addr < heap_end)
             {
-                p->heap_tracker[i].loaded = 1;
+                p->heap_tracker[i].loaded = true;
+                p->heap_tracker[i].last_load_time = read_current_timestamp();
+                break;
             }
         }
     }
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
-    if (load_from_disk)
+    if (p->heap_tracker[i].startblock != -1)
     {
         retrieve_page_from_disk(p, faulting_addr);
     }
