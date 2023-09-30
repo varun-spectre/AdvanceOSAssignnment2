@@ -140,6 +140,9 @@ UPROGS=\
 	$U/_test5-odheap-big\
 	$U/_test6-pswap1\
 	$U/_test7-pswap2\
+	$U/_test8-cow1\
+	$U/_test9-cow2\
+	$U/_test10-cow3\
 	$U/_zombie\
 
 # swap disk
