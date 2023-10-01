@@ -52,7 +52,7 @@ void usertrap(void)
   if (r_scause() == 12 || r_scause() == 13 || r_scause() == 15)
   {
     // check if scause is 15, if so call copy_on_write
-    if (r_scause() == 15 and p->cow_enabled == 1)
+    if (r_scause() == 15 && p->cow_enabled == 1)
     {
       // printf("devintr before copy on write: %d\n", devintr());
       copy_on_write();
