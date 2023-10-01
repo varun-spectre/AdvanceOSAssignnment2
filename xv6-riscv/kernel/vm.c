@@ -202,7 +202,7 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       if the count is more than 1 then decrement the count
       */
       struct proc *p = myproc();
-      if (p->cow_group, is_shmem(pa))
+      if (is_shmem(p->cow_group, pa))
       {
         if (get_cow_group_count(p->cow_group) == 1)
         {
