@@ -33,6 +33,7 @@ void trapinithart(void)
 //
 void usertrap(void)
 {
+  printf("in usertrap\n");
   int which_dev = 0;
 
   if ((r_sstatus() & SSTATUS_SPP) != 0)
@@ -57,9 +58,9 @@ void usertrap(void)
     }
     else
     {
-      // printf("devintr before page fault handler: %d\n", devintr());
+      printf("devintr before page fault handler: %d\n", devintr());
       page_fault_handler();
-      // printf("devintr after page fault handler: %d\n", devintr());
+      printf("devintr after page fault handler: %d\n", devintr());
     }
   }
 
