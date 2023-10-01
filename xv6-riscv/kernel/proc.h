@@ -2,7 +2,8 @@
 #include <stdbool.h>
 
 // Saved registers for kernel context switches.
-struct context {
+struct context
+{
   uint64 ra;
   uint64 sp;
 
@@ -22,11 +23,12 @@ struct context {
 };
 
 // Per-CPU state.
-struct cpu {
-  struct proc *proc;          // The process running on this cpu, or null.
-  struct context context;     // swtch() here to enter scheduler().
-  int noff;                   // Depth of push_off() nesting.
-  int intena;                 // Were interrupts enabled before push_off()?
+struct cpu
+{
+  struct proc *proc;      // The process running on this cpu, or null.
+  struct context context; // swtch() here to enter scheduler().
+  int noff;               // Depth of push_off() nesting.
+  int intena;             // Were interrupts enabled before push_off()?
 };
 
 extern struct cpu cpus[NCPU];
@@ -43,7 +45,8 @@ extern struct cpu cpus[NCPU];
 // the trapframe includes callee-saved user registers like s0-s11 because the
 // return-to-user path via usertrapret() doesn't return through
 // the entire kernel call stack.
-struct trapframe {
+struct trapframe
+{
   /*   0 */ uint64 kernel_satp;   // kernel page table
   /*   8 */ uint64 kernel_sp;     // top of process's kernel stack
   /*  16 */ uint64 kernel_trap;   // usertrap()
@@ -82,29 +85,46 @@ struct trapframe {
   /* 280 */ uint64 t6;
 };
 
-enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE, PFAULT };
+enum procstate
+{
+  UNUSED,
+  USED,
+  SLEEPING,
+  RUNNABLE,
+  RUNNING,
+  ZOMBIE,
+  PFAULT
+};
 
 /* CSE 536: Data structure to track a process' heap regions. */
-struct heap_tracker_t {
-  uint64 addr;                  // starting virtual address of heap page
-  uint64 last_load_time;        // when the page was loaded into memory
-  bool   loaded;                // has the heap page been loaded yet
-  int    startblock;            // if located in disk, the starting block
+struct heap_tracker_t
+{
+  uint64 addr;           // starting virtual address of heap page
+  uint64 last_load_time; // when the page was loaded into memory
+  bool loaded;           // has the heap page been loaded yet
+  int startblock;        // if located in disk, the starting block
+};
+
+/* CSE 536: Data structure to store number of processes in a cow group*/
+struct cow_group_t
+{
+  // need group if as key and count as value
 };
 
 // Per-process state
-struct proc {
+struct proc
+{
   struct spinlock lock;
 
   // p->lock must be held when using these:
-  enum procstate state;        // Process state
-  void *chan;                  // If non-zero, sleeping on chan
-  int killed;                  // If non-zero, have been killed
-  int xstate;                  // Exit status to be returned to parent's wait
-  int pid;                     // Process ID
+  enum procstate state; // Process state
+  void *chan;           // If non-zero, sleeping on chan
+  int killed;           // If non-zero, have been killed
+  int xstate;           // Exit status to be returned to parent's wait
+  int pid;              // Process ID
 
   // wait_lock must be held when using this:
-  struct proc *parent;         // Parent process
+  struct proc *parent; // Parent process
 
   // these are private to the process, so p->lock need not be held.
   uint64 kstack;               // Virtual address of kernel stack
@@ -117,10 +137,10 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   /* CSE 536: Variables defined for assignment #2. */
-  bool                    ondemand;
-  struct heap_tracker_t   heap_tracker[MAXHEAP];
-  int                     resident_heap_pages;
-  
-  int cow_group;               // The group of processes sharing memory
-  int cow_enabled;             // CoW enabled
+  bool ondemand;
+  struct heap_tracker_t heap_tracker[MAXHEAP];
+  int resident_heap_pages;
+
+  int cow_group;   // The group of processes sharing memory
+  int cow_enabled; // CoW enabled
 };

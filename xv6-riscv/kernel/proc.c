@@ -341,16 +341,51 @@ int fork(int cow_enabled)
   // You will have to implement the same
 
   // Set the appropriate metadata to track a CoW group
+  if (cow_enabled == 1)
+  {
+    // check if parent is already in a CoW group
+    if (p->cow_enabled == 1)
+    {
+      np->cow_enabled = 1;
+      np->cow_group = p->cow_group;
+      incr_cow_group_count(p->cow_group);
+    }
+    else
+    {
+      p->cow_enabled = 1;
+      p->cow_group = p->pid;
+      cow_group_init(p->pid);
+
+      np->cow_enabled = 1;
+      np->cow_group = p->pid;
+
+      incr_cow_group_count(p->pid);
+      incr_cow_group_count(p->pid);
+    }
+  }
 
   // implement and call the uvm_copy() function defined in cow.c
 
   // Copy user memory from parent to child.
-  if (uvmcopy(p->pagetable, np->pagetable, p->sz) < 0)
+  if (cow_enabled == 0)
   {
-    freeproc(np);
-    release(&np->lock);
-    return -1;
+    if (uvmcopy(p->pagetable, np->pagetable, p->sz) < 0)
+    {
+      freeproc(np);
+      release(&np->lock);
+      return -1;
+    }
   }
+  else
+  {
+    if (uvmcopy_cow(p->pagetable, np->pagetable, p->sz) < 0)
+    {
+      freeproc(np);
+      release(&np->lock);
+      return -1;
+    }
+  }
+
   np->sz = p->sz;
 
   // copy saved user registers.
