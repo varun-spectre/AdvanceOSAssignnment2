@@ -124,9 +124,9 @@ int uvmcopy_cow(pagetable_t old, pagetable_t new, uint64 sz)
             panic("uvmcopy: pte should exist");
         if ((*pte & PTE_V) == 0)
             panic("uvmcopy: page not present");
+        *pte &= ~PTE_W;
         pa = PTE2PA(*pte);
         flags = PTE_FLAGS(*pte);
-        flags &= ~PTE_W;
         // if (mappages(old, i, PGSIZE, (uint64)pa, flags) != 0)
         // {
         //     goto err;
