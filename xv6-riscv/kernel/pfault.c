@@ -102,7 +102,7 @@ void evict_page_to_disk(struct proc *p)
     /* Update heap tracker. */
     p->heap_tracker[min_index].loaded = false;
     p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
-    //p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
+    // p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
 }
 
 /* Retrieve faulted page from disk. */
@@ -134,10 +134,10 @@ void retrieve_page_from_disk(struct proc *p, uint64 uvaddr)
     /* Read the disk block into temp kernel page. */
     for (int i = 0; i < 4; i++)
     {
-	struct buf *b;
+        struct buf *b;
         b = bread(1, PSASTART + (blockno) + i);
         // Copy page contents to b.data using memmove.
-        memmove( kpage + i * BSIZE, b->data,  BSIZE);
+        memmove(kpage + i * BSIZE, b->data, BSIZE);
         brelse(b);
     }
 
@@ -169,6 +169,11 @@ void page_fault_handler(void)
     faulting_addr = faulting_addr >> 12;
     faulting_addr = faulting_addr << 12;
     print_page_fault(p->name, faulting_addr);
+
+    if (r_scause() == 15 && p->cow_enabled == 1)
+    {
+        copy_on_write();
+    }
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
     for (int i = 0; i < MAXHEAP; i++)

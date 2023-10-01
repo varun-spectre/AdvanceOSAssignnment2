@@ -51,21 +51,10 @@ void usertrap(void)
   /* CSE 536: (2.2) Intercept page faults and redirect them to the fault handler. */
   if (r_scause() == 12 || r_scause() == 13 || r_scause() == 15)
   {
-    // check if scause is 15, if so call copy_on_write
-    if (r_scause() == 15 && p->cow_enabled == 1)
-    {
-      // printf("devintr before copy on write: %d\n", devintr());
-      copy_on_write();
-      // printf("devintr after copy on write: %d\n", devintr());
-    }
-    else
-    {
-      // printf("devintr before page fault handler: %d\n", devintr());
-      page_fault_handler();
-      // printf("devintr after page fault handler: %d\n", devintr());
-    }
+    // printf("devintr before page fault handler: %d\n", devintr());
+    page_fault_handler();
+    // printf("devintr after page fault handler: %d\n", devintr());
   }
-
   else if (r_scause() == 8)
   {
     // system call
