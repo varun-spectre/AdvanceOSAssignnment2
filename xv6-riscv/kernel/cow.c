@@ -159,6 +159,7 @@ void copy_on_write()
     char *mem;
     uint64 pa;
     pte_t *pte;
+    uint flags;
     if ((mem = kalloc()) == 0)
         panic("error allocating memory in copy_on_write");
 
@@ -170,7 +171,8 @@ void copy_on_write()
     if ((*pte & PTE_V) == 0)
         panic("page not present in copy_on_write");
     pa = PTE2PA(*pte);
-
+    flags = PTE_FLAGS(*pte);
+    flags |= PTE_W;
     // Check if the page is shared
     if (!is_shmem(p->cow_group, pa))
         panic("page not shared in copy_on_write");
@@ -179,10 +181,10 @@ void copy_on_write()
     memmove(mem, (char *)pa, PGSIZE);
 
     // Unmap the shared page from the faulting process's page table
-    uvmunmap(p->pagetable, faulting_addr, 1, 1);
+    uvmunmap(p->pagetable, faulting_addr, 1, 0);
 
     // Map the new page in the faulting process's page table with write permissions
-    if (mappages(p->pagetable, faulting_addr, PGSIZE, (uint64)mem, PTE_W | PTE_X | PTE_R | PTE_U) != 0)
+    if (mappages(p->pagetable, faulting_addr, PGSIZE, (uint64)mem, flags) != 0)
         panic("error mapping pages in copy_on_write");
 
     // As we are removing the shared page, decrement the count of processes sharing the page
