@@ -54,7 +54,9 @@ void usertrap(void)
     // check if scause is 15, if so call copy_on_write
     if (r_scause() == 15)
     {
+      printf("devintr before copy on write: %d\n", devintr());
       copy_on_write();
+      printf("devintr after copy on write: %d\n", devintr());
     }
     else
     {
