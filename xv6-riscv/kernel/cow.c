@@ -127,10 +127,10 @@ int uvmcopy_cow(pagetable_t old, pagetable_t new, uint64 sz)
         pa = PTE2PA(*pte);
         flags = PTE_FLAGS(*pte);
         flags &= ~PTE_W;
-        if (mappages(old, i, PGSIZE, (uint64)pa, flags) != 0)
-        {
-            goto err;
-        }
+        // if (mappages(old, i, PGSIZE, (uint64)pa, flags) != 0)
+        // {
+        //     goto err;
+        // }
         if (mappages(new, i, PGSIZE, (uint64)pa, flags) != 0)
         {
             goto err;
