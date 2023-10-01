@@ -209,11 +209,11 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
           // make group id as -1
 
           kfree((void *)pa);
-          decrement_cow_group_count(p->cow_group); // for nor freeing twice - temp fix
+          decr_cow_group_count(p->cow_group); // for nor freeing twice - temp fix
         }
         else
         {
-          decrement_cow_group_count(p->cow_group);
+          decr_cow_group_count(p->cow_group);
         }
       }
       else
