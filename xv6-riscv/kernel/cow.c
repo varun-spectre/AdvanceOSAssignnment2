@@ -153,7 +153,7 @@ void copy_on_write()
     uint64 faulting_addr = r_stval();
     faulting_addr = faulting_addr >> 12;
     faulting_addr = faulting_addr << 12;
-    print_copy_on_write(p->name, faulting_addr);
+    print_copy_on_write(p, faulting_addr);
 
     // Allocate a new page
     char *mem;
