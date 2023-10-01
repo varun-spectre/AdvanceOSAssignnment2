@@ -16,6 +16,7 @@ void main()
     printf("\n");
     printf("xv6 kernel is booting\n");
     printf("\n");
+    cow_init();         // CSE 536: Initialize CoW
     kinit();            // physical page allocator
     kvminit();          // create kernel page table
     kvminithart();      // turn on paging
@@ -32,9 +33,7 @@ void main()
     /* CSE 536: Initialize all PSA regions when OS boots. */
     init_psa_regions();
 
-    cow_init();
-
-    userinit(); // first user process
+        userinit(); // first user process
     __sync_synchronize();
     started = 1;
   }
