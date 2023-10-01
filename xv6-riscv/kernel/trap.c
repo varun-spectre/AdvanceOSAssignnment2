@@ -33,7 +33,7 @@ void trapinithart(void)
 //
 void usertrap(void)
 {
-  printf("in usertrap\n");
+  // printf("in usertrap\n");
   int which_dev = 0;
 
   if ((r_sstatus() & SSTATUS_SPP) != 0)
@@ -52,17 +52,17 @@ void usertrap(void)
   if (r_scause() == 12 || r_scause() == 13 || r_scause() == 15)
   {
     // check if scause is 15, if so call copy_on_write
-    if (r_scause() == 15)
+    if (r_scause() == 15 and p->cow_enabled == 1)
     {
-      printf("devintr before copy on write: %d\n", devintr());
+      // printf("devintr before copy on write: %d\n", devintr());
       copy_on_write();
-      printf("devintr after copy on write: %d\n", devintr());
+      // printf("devintr after copy on write: %d\n", devintr());
     }
     else
     {
-      printf("devintr before page fault handler: %d\n", devintr());
+      // printf("devintr before page fault handler: %d\n", devintr());
       page_fault_handler();
-      printf("devintr after page fault handler: %d\n", devintr());
+      // printf("devintr after page fault handler: %d\n", devintr());
     }
   }
 
