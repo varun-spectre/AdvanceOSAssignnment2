@@ -207,12 +207,12 @@ void copy_on_write()
         panic("error mapping pages in copy_on_write");
 
     // As we are removing the shared page, decrement the count of processes sharing the page
-    decr_cow_group_count(p->cow_group);
+    // decr_cow_group_count(p->cow_group);
 
     // If reference count is zero, remove the shared page
-    if (get_cow_group_count(p->cow_group) == 0)
-    {
-        rem_shem(p->cow_group, pa);
-        kfree((void *)pa);
-    }
+    // if (get_cow_group_count(p->cow_group) == 0)
+    // {
+    //     rem_shem(p->cow_group, pa);
+    //     kfree((void *)pa);
+    // }
 }
