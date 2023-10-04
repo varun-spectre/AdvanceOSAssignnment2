@@ -195,12 +195,6 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       uint64 pa = PTE2PA(*pte);
       /* CSE 536: (2.6.1) Freeing Process Memory */
       // Make sure that the shared pages, belonging to a CoW group, are not freed twice
-      /*
-      check if the pa is part of shared memory
-      if yes, then check the number of groups sharing the page by get_cow_group_count(int group)
-      if the count is 1 then free the page and decrement the count and remove the page from shmem
-      if the count is more than 1 then decrement the count
-      */
       struct proc *p = myproc();
       // if (p->cow_enabled && is_shmem(p->cow_group, pa))
       // {

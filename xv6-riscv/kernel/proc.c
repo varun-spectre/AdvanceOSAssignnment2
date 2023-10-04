@@ -282,18 +282,17 @@ int growproc(int n)
 {
   uint64 sz;
   struct proc *p = myproc();
-
   /* CSE 536: (2.3) Instead of allocating pages, make these allocations
    * on-demand. Also, keep track of all allocated heap pages.
    */
-  // update the heaptracker in proc
   if (n > 0 && p->ondemand == true)
   {
+    print_skip_heap_region(p->name, p->sz, PGROUNDUP(n) / PGSIZE);
     int npages = PGROUNDUP(n) / PGSIZE;
     track_heap(p, p->sz, npages);
     p->sz += n;
+    return 0;
   }
-
   // check if name is init or sh
   if (p->ondemand == false)
   {
@@ -312,11 +311,6 @@ int growproc(int n)
       sz = uvmdealloc(p->pagetable, sz, sz + n);
     }
     p->sz = sz;
-    return 0;
-  }
-  else
-  {
-    print_skip_heap_region(p->name, p->sz, PGROUNDUP(n) / PGSIZE);
     return 0;
   }
 }
