@@ -209,7 +209,7 @@ void print_load_seg(uint64 vaddr, uint64 seg, int size);
 void print_skip_heap_region(char *name, uint64 vaddr, int npages);
 void print_evict_page(uint64 vaddr, int startblock);
 void print_retrieve_page(uint64 vaddr, int startblock);
-void print_copy_on_write(struct proc *p, uint64 vaddr)
+void print_copy_on_write(struct proc *p, uint64 vaddr);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
