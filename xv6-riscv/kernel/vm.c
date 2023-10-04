@@ -190,20 +190,17 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
     // panic("uvmunmap: not mapped");
     if (PTE_FLAGS(*pte) == PTE_V)
       panic("uvmunmap: not a leaf");
+
     if (do_free)
     {
       uint64 pa = PTE2PA(*pte);
       /* CSE 536: (2.6.1) Freeing Process Memory */
-      // Make sure that the shared pages, belonging to a CoW group, are not freed twice
-      struct proc *p = myproc();
-      if (p->cow_enabled)
+      // need to iterate through all cow groups and decrement the count and if count if the page dosent belong to
+      if (is_shmem_any(pa))
       {
-        // decr_cow_group_count(myproc()->cow_group);
-        if (get_cow_group_count(myproc()->cow_group) == 0)
-        {
-          // rem_shem(myproc()->cow_group, pa);
+        // if the page is not shared, free it.
+        if (remove_shmem(pa))
           kfree((void *)pa);
-        }
       }
       else
       {

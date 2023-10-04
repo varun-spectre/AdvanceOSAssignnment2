@@ -113,6 +113,42 @@ int rem_shem(int group, uint64 pa)
     return 0;
 }
 
+// helper function for uvmunmap
+// return 1 if the page is shared by only one process else zero
+int remove_shmem(uint64 pa)
+{
+    for (int i = 0; i < NPROC; i++)
+    {
+        if (is_shmem(cow_group[i].group, pa))
+        {
+            if (get_cow_group_count(cow_group[i].group) == 1)
+            {
+                rem_shem(cow_group[i].group, pa);
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
+
+// helper function for uvmunmap
+// check if a physical address is shared by any process return 1 if true else 0
+int is_shmem_any(uint64 pa)
+{
+    for (int i = 0; i < NPROC; i++)
+    {
+        if (is_shmem(cow_group[i].group, pa))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void cow_init()
 {
     for (int i = 0; i < NPROC; i++)
