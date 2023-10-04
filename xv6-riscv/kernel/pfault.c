@@ -48,7 +48,6 @@ void evict_page_to_disk(struct proc *p)
             break;
         }
     }
-    printf("evicting page to disk: %d\n", blockno);
 
     /* Find victim page using FIFO. */
     // find the heap page that was loaded the longest time ago using heap_tracker.
@@ -102,7 +101,6 @@ void evict_page_to_disk(struct proc *p)
     /* Update heap tracker. */
     p->heap_tracker[min_index].loaded = false;
     p->heap_tracker[min_index].last_load_time = 0xFFFFFFFFFFFFFFFF;
-    // p->heap_tracker[min_index].addr = 0xFFFFFFFFFFFFFFFF;
 }
 
 /* Retrieve faulted page from disk. */
