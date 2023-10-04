@@ -190,7 +190,7 @@ void virtio_disk_intr(void);
 extern uint64 non_fault_addr;
 void page_fault_handler(void);
 void proc_pswap_diskblocks_init(void);
-
+void init_psa_regions(void);
 // CSE 536: cow.c
 int is_shmem_any(uint64 pa);
 int get_cow_group_count(int group);
@@ -209,7 +209,7 @@ void print_load_seg(uint64 vaddr, uint64 seg, int size);
 void print_skip_heap_region(char *name, uint64 vaddr, int npages);
 void print_evict_page(uint64 vaddr, int startblock);
 void print_retrieve_page(uint64 vaddr, int startblock);
-void print_copy_on_write(struct proc *p, uint64 vaddr);
+void print_copy_on_write(struct proc *p, uint64 vaddr)
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x) / sizeof((x)[0]))
