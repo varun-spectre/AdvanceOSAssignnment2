@@ -193,8 +193,8 @@ void copy_on_write()
     flags = PTE_FLAGS(*pte);
     flags |= PTE_W;
     // Check if the page is shared
-    if (!is_shmem(p->cow_group, pa))
-        panic("page not shared in copy_on_write");
+    // if (!is_shmem(p->cow_group, pa))
+    //     panic("page not shared in copy_on_write");
 
     // Copy contents from the shared page to the new page
     memmove(mem, (char *)pa, PGSIZE);

@@ -198,10 +198,10 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       struct proc *p = myproc();
       if (p->cow_enabled)
       {
-        decr_cow_group_count(myproc()->cow_group);
+        // decr_cow_group_count(myproc()->cow_group);
         if (get_cow_group_count(myproc()->cow_group) == 0)
         {
-          rem_shem(myproc()->cow_group, pa);
+          // rem_shem(myproc()->cow_group, pa);
           kfree((void *)pa);
         }
       }
