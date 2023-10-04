@@ -35,16 +35,12 @@ int exec(char *path, char **argv)
   if (strncmp(path, "/init", strlen("/init")) == 0 || strncmp(path, "sh", strlen("sh")) == 0 || strncmp(path, "test8-cow1", strlen("test8-cow1")) == 0 || strncmp(path, "test9-cow2", strlen("test9-cow2")) == 0 || strncmp(path, "test10-cow3", strlen("test10-cow3")) == 0)
   {
     p->ondemand = false;
-    printf("not on demand path %s\n", path);
   }
   else
   {
     p->ondemand = true;
     print_ondemand_proc(path);
   }
-  // printf("exec: %s\n", path);
-  // printf("exec: %s\n", p->name);
-  // printf("exec: %d\n", p->ondemand);
   begin_op();
 
   if ((ip = namei(path)) == 0)
