@@ -159,17 +159,13 @@ found:
 static void
 freeproc(struct proc *p)
 {
-  // decrement the count of the cow group associated with this process
-  if (p->cow_group != 0)
-  {
-    decr_cow_group_count(p->cow_group);
-  }
-
   if (p->trapframe)
     kfree((void *)p->trapframe);
   p->trapframe = 0;
   if (p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
+  if (p->cow_group != 0)
+    decr_cow_group_count(p->cow_group);
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;

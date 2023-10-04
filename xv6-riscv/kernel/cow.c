@@ -124,6 +124,7 @@ int remove_shmem(uint64 pa)
             if (get_cow_group_count(cow_group[i].group) == 1)
             {
                 rem_shem(cow_group[i].group, pa);
+                decr_cow_group_count(cow_group[i].group);
                 return 1;
             }
             else
@@ -136,14 +137,14 @@ int remove_shmem(uint64 pa)
 }
 
 // helper function for uvmunmap
-// check if a physical address is shared by any process return 1 if true else 0
+// check if a physical address is shared by any process if yes return grp number else 0
 int is_shmem_any(uint64 pa)
 {
     for (int i = 0; i < NPROC; i++)
     {
         if (is_shmem(cow_group[i].group, pa))
         {
-            return 1;
+            return cow_group[i].group;
         }
     }
     return 0;

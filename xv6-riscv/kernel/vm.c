@@ -196,15 +196,15 @@ void uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       uint64 pa = PTE2PA(*pte);
       /* CSE 536: (2.6.1) Freeing Process Memory */
       // need to iterate through all cow groups and decrement the count and if count if the page dosent belong to
-      if (is_shmem_any(pa))
+      int cow_grp_num = is_shmem_any(pa);
+      if (cow_grp_num == 0)
       {
-        // if the page is not shared, free it.
-        if (remove_shmem(pa))
-          kfree((void *)pa);
+        kfree((void *)pa);
       }
       else
       {
-        kfree((void *)pa);
+        if (get_cow_group_count(cow_grp_num) == 1)
+          kfree((void *)pa);
       }
     }
     *pte = 0;
