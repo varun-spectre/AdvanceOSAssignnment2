@@ -316,6 +316,7 @@ int growproc(int n)
     p->sz = sz;
     return 0;
   }
+  return -1;
 }
 
 // Create a new process, copying the parent.
