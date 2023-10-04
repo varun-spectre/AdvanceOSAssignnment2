@@ -94,6 +94,25 @@ int is_shmem(int group, uint64 pa)
     return 0;
 }
 
+int rem_shem(int group, uint64 pa)
+{
+    if (group == -1)
+        return 0;
+
+    uint64 *shmem = get_cow_group(group)->shmem;
+    for (int i = 0; i < SHMEM_MAX; i++)
+    {
+        if (shmem[i] == 0)
+            return 0;
+        if (shmem[i] == pa)
+        {
+            shmem[i] = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void cow_init()
 {
     for (int i = 0; i < NPROC; i++)
@@ -189,4 +208,11 @@ void copy_on_write()
 
     // As we are removing the shared page, decrement the count of processes sharing the page
     decr_cow_group_count(p->cow_group);
+
+    // If reference count is zero, remove the shared page
+    if (get_cow_group_count(p->cow_group) == 0)
+    {
+        rem_shem(p->cow_group, pa);
+        kfree((void *)pa);
+    }
 }
