@@ -198,6 +198,7 @@ void decr_cow_group_count(int group);
 void incr_cow_group_count(int group);
 void cow_init(void);
 int uvmcopy_cow(pagetable_t old, pagetable_t new, uint64 sz);
+void copy_on_write(void);
 
 // CSE 536: debug.h
 void print_static_proc(char *name);
