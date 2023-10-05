@@ -395,7 +395,11 @@ int copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     pa0 = walkaddr(pagetable, va0);
     if (pa0 == 0)
     {
-      return -1;
+      w_stval(va0);
+      page_fault_handler();
+      pa0 = walkaddr(pagetable, va0);
+      // we dont want to return 1
+      // return -1;
     }
     n = PGSIZE - (dstva - va0);
     if (n > len)
